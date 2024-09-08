@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// ignore: must_be_immutable
-class SimpleAppBar extends StatelessWidget with PreferredSizeWidget {
+class SimpleAppBar extends StatelessWidget implements PreferredSizeWidget {
   final PreferredSizeWidget? bottom;
   String? title;
+  
   SimpleAppBar({Key? key, this.bottom, this.title}) : super(key: key);
 
   @override
   Size get preferredSize => bottom == null
-      ? Size(56, AppBar().preferredSize.height)
-      : Size(56, 80 + AppBar().preferredSize.height);
+      ? Size.fromHeight(AppBar().preferredSize.height)
+      : Size.fromHeight(80 + AppBar().preferredSize.height);
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class SimpleAppBar extends StatelessWidget with PreferredSizeWidget {
         ),
       ),
       title: Text(
-        title!,
+        title ?? '',
         style: GoogleFonts.lato(
           textStyle: const TextStyle(
             fontSize: 25,

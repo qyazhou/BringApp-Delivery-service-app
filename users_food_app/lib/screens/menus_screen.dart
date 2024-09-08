@@ -86,7 +86,6 @@ class _MenusScreenState extends State<MenusScreen> {
                   .collection("sellers")
                   .doc(widget.model!.sellerUID)
                   .collection("menus")
-                  //ordering menus and items by publishing date (descending)
                   .orderBy("publishedDate", descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
@@ -96,25 +95,27 @@ class _MenusScreenState extends State<MenusScreen> {
                           child: circularProgress(),
                         ),
                       )
-                    : SliverStaggeredGrid.countBuilder(
-                        staggeredTileBuilder: (c) =>
-                            const StaggeredTile.count(1, 1.5),
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 1,
-                        crossAxisSpacing: 0,
-                        itemBuilder: (context, index) {
-                          Menus model = Menus.fromJson(
-                              snapshot.data!.docs[index].data()!
-                                  as Map<String, dynamic>);
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: MenusDesignWidget(
-                              model: model,
-                              context: context,
-                            ),
-                          );
-                        },
-                        itemCount: snapshot.data!.docs.length,
+                    : SliverToBoxAdapter(
+                        child: MasonryGridView.count(
+                          crossAxisCount: 2,  // 2 列布局
+                          mainAxisSpacing: 1,
+                          crossAxisSpacing: 0,
+                          shrinkWrap: true,  // 让 MasonryGridView 在 Sliver 中正常显示
+                          physics: const NeverScrollableScrollPhysics(),  // 禁用内部滚动
+                          itemBuilder: (context, index) {
+                            Menus model = Menus.fromJson(
+                                snapshot.data!.docs[index].data()!
+                                    as Map<String, dynamic>);
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: MenusDesignWidget(
+                                model: model,
+                                context: context,
+                              ),
+                            );
+                          },
+                          itemCount: snapshot.data!.docs.length,
+                        ),
                       );
               },
             ),

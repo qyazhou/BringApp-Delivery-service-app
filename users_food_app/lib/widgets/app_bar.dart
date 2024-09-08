@@ -4,9 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:users_food_app/assistantMethods/cart_item_counter.dart';
 import 'package:users_food_app/screens/cart_screen.dart';
 
-class MyAppBar extends StatefulWidget with PreferredSizeWidget {
+class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
   final PreferredSizeWidget? bottom;
   final String? sellerUID;
+  
   MyAppBar({Key? key, this.bottom, this.sellerUID}) : super(key: key);
 
   @override
@@ -14,8 +15,8 @@ class MyAppBar extends StatefulWidget with PreferredSizeWidget {
 
   @override
   Size get preferredSize => bottom == null
-      ? Size(56, AppBar().preferredSize.height)
-      : Size(56, 80 + AppBar().preferredSize.height);
+      ? Size.fromHeight(AppBar().preferredSize.height)
+      : Size.fromHeight(80 + AppBar().preferredSize.height);
 }
 
 class _MyAppBarState extends State<MyAppBar> {

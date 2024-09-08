@@ -131,8 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection("sellers").snapshots(),
+              stream: FirebaseFirestore.instance.collection("sellers").snapshots(),
               builder: (context, snapshot) {
                 return !snapshot.hasData
                     ? SliverToBoxAdapter(
@@ -140,27 +139,30 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: circularProgress(),
                         ),
                       )
-                    : SliverStaggeredGrid.countBuilder(
-                        staggeredTileBuilder: (c) => const StaggeredTile.fit(1),
-                        crossAxisCount: 1,
-                        mainAxisSpacing: 1,
-                        crossAxisSpacing: 1,
-                        itemBuilder: (context, index) {
-                          Sellers smodel = Sellers.fromJson(
-                              snapshot.data!.docs[index].data()!
-                                  as Map<String, dynamic>);
-                          return Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: SellersDesignWidget(
-                              model: smodel,
-                              context: context,
-                            ),
-                          );
-                        },
-                        itemCount: snapshot.data!.docs.length,
+                    : SliverToBoxAdapter(
+                        child: MasonryGridView.count(
+                          crossAxisCount: 1,
+                          mainAxisSpacing: 1,
+                          crossAxisSpacing: 1,
+                          shrinkWrap: true,  // 让 MasonryGridView 在 Sliver 中正确显示
+                          physics: const NeverScrollableScrollPhysics(),  // 禁用滚动，以便外部 CustomScrollView 控制滚动
+                          itemBuilder: (context, index) {
+                            Sellers smodel = Sellers.fromJson(
+                                snapshot.data!.docs[index].data()!
+                                    as Map<String, dynamic>);
+                            return Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: SellersDesignWidget(
+                                model: smodel,
+                                context: context,
+                              ),
+                            );
+                          },
+                          itemCount: snapshot.data!.docs.length,
+                        ),
                       );
               },
-            )
+            ),
           ],
         ),
       ),

@@ -66,24 +66,26 @@ class _ItemsScreenState extends State<ItemsScreen> {
                           child: circularProgress(),
                         ),
                       )
-                    : SliverStaggeredGrid.countBuilder(
-                        staggeredTileBuilder: (c) =>
-                            const StaggeredTile.count(1, 1.5),
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 1,
-                        crossAxisSpacing: 0,
-                        itemBuilder: (context, index) {
-                          Items model = Items.fromJson(
-                              snapshot.data!.docs[index].data()!
-                                  as Map<String, dynamic>);
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ItemsDesignWidget(
-                              model: model,
-                            ),
-                          );
-                        },
-                        itemCount: snapshot.data!.docs.length,
+                    : SliverToBoxAdapter(
+                        child: MasonryGridView.count(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 1,
+                          crossAxisSpacing: 0,
+                          shrinkWrap: true,  // 让 MasonryGridView 在 Sliver 中正确显示
+                          physics: const NeverScrollableScrollPhysics(),  // 禁用滚动，以便外部 CustomScrollView 控制滚动
+                          itemBuilder: (context, index) {
+                            Items model = Items.fromJson(
+                                snapshot.data!.docs[index].data()!
+                                    as Map<String, dynamic>);
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ItemsDesignWidget(
+                                model: model,
+                              ),
+                            );
+                          },
+                          itemCount: snapshot.data!.docs.length,
+                        ),
                       );
               },
             ),
