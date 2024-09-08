@@ -90,44 +90,46 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               borderRadius: BorderRadius.circular(copAnimated ? 40.0 : 0.0),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Visibility(
-                  visible: !copAnimated,
-                  child: Lottie.asset(
-                    'images/67226-food-app-interaction.json',
-                    controller: _coffeeController,
-                    onLoaded: (composition) {
-                      _coffeeController
-                        ..duration = composition.duration
-                        ..forward();
-                    },
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Visibility(
+                    visible: !copAnimated,
+                    child: Lottie.asset(
+                      'images/67226-food-app-interaction.json',
+                      controller: _coffeeController,
+                      onLoaded: (composition) {
+                        _coffeeController
+                          ..duration = composition.duration
+                          ..forward();
+                      },
+                    ),
                   ),
-                ),
-                Visibility(
-                  visible: copAnimated,
-                  child: Image.asset(
-                    'images/image0.png',
-                    height: 300.0,
+                  Visibility(
+                    visible: copAnimated,
+                    child: Image.asset(
+                      'images/image0.png',
+                      height: 300.0,
+                    ),
                   ),
-                ),
-                Center(
-                  child: AnimatedOpacity(
-                    opacity: animateCafeText ? 1 : 0,
-                    duration: const Duration(seconds: 1),
-                    child: Text(
-                      'Order FOOD'.toUpperCase(),
-                      style: GoogleFonts.lato(
-                        fontSize: 27,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                  Center(
+                    child: AnimatedOpacity(
+                      opacity: animateCafeText ? 1 : 0,
+                      duration: const Duration(seconds: 1),
+                      child: Text(
+                        'Order FOOD'.toUpperCase(),
+                        style: GoogleFonts.lato(
+                          fontSize: 27,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 
