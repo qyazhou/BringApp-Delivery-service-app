@@ -1,36 +1,45 @@
 {
   "project_info": {
-    "project_number": "38185865524",
-    "project_id": "bring-clone-app",
-    "storage_bucket": "bring-clone-app.appspot.com"
+    "project_number": "72336069732",
+    "project_id": "useronlineorder-c620f",
+    "storage_bucket": "useronlineorder-c620f.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:38185865524:android:6d6aa9fcbf471f26081561",
+        "mobilesdk_app_id": "1:72336069732:android:43f9b94e7e571ebae6fb71",
         "android_client_info": {
           "package_name": "com.adnanturgay.sellersapp"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "38185865524-la2ce851g9e383kl2nmq0smhtap9p333.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDUZuKYClVTabVTlg1hWpKcEXOvgAla5YM"
+          "current_key": "AIzaSyBFLkjocq-a8u9vKUWjYAW3SHDTzXyjU7w"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "38185865524-la2ce851g9e383kl2nmq0smhtap9p333.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:72336069732:android:8bcbfbcfbbbd57e5e6fb71",
+        "android_client_info": {
+          "package_name": "com.adnanturgay.usersapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFLkjocq-a8u9vKUWjYAW3SHDTzXyjU7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
         }
       }
     }

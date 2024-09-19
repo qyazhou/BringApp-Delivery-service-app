@@ -1,9 +1,10 @@
 // ignore_for_file: non_constant_identifier_names, library_prefixes
 
 import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -36,21 +37,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController phoneController = TextEditingController();
   TextEditingController locationController = TextEditingController();
 
-//image picker
+  //image picker
   XFile? imageXFile;
   final ImagePicker _picker = ImagePicker();
 
-//location
+  //location
   Position? position;
   List<Placemark>? placeMarks;
 
-//address name variable
+  //address name variable
   String completeAddress = "";
 
-//seller image url
+  //seller image url
   String sellerImageUrl = "";
 
-//function for getting current location
+  //function for getting current location
   Future<Position?> getCurrenLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -78,11 +79,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
 
     position = newPosition;
-
-    placeMarks = await placemarkFromCoordinates(
-      position!.latitude,
-      position!.longitude,
-    );
+    if (position != null) {
+      print("position: $position");
+      
+      try {
+        placeMarks = await placemarkFromCoordinates(
+          position!.latitude,
+          position!.longitude,
+        );
+        print("PlaceMarks: $placeMarks");
+      } catch (e) {
+        print("Failed to get placemarks: $e");
+      }
+      
+    } else {
+      print("Error: position is null.");
+    }
 
     Placemark pMark = placeMarks![0];
 
@@ -95,28 +107,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
 //function for getting image
   Future<void> _getImage() async {
-    imageXFile = await _picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      imageXFile;
-    });
+    if (kIsWeb) {
+      final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        final Uint8List imageData = await pickedFile.readAsBytes();
+        setState(() {
+          imageXFile = XFile.fromData(imageData, name: pickedFile.name);
+        });
+      }
+    } else {
+      imageXFile = await _picker.pickImage(source: ImageSource.gallery);
+      setState(() {});
+    }
   }
 
 //Form Validation
   Future<void> signUpFormValidation() async {
     //checking if user selected image
     if (imageXFile == null) {
-      setState(
-        () {
-          // imageXFile == "images/bg.png";
-          showDialog(
-            context: context,
-            builder: (c) {
-              return const ErrorDialog(
-                message: "Please select an image",
-              );
-            },
-          );
+      showDialog(
+        context: context,
+        builder: (c) {
+          return const ErrorDialog(message: "Please select an image");
         },
       );
     } else {
@@ -142,6 +154,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
               .ref()
               .child("sellers")
               .child(fileName);
+        if (kIsWeb) {
+          // Web upload using data from XFile
+          final Uint8List imageData = await imageXFile!.readAsBytes();
+          fStorage.UploadTask uploadTask = reference.putData(imageData);
+          fStorage.TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
+          await taskSnapshot.ref.getDownloadURL().then((url) {
+            sellerImageUrl = url;
+            AuthenticateSellerAndSignUp();
+          });
+        } else {
+          // Mobile upload
           fStorage.UploadTask uploadTask =
               reference.putFile(File(imageXFile!.path));
           fStorage.TaskSnapshot taskSnapshot =
@@ -154,7 +177,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           });
         }
         //if there is empty place show this message
-        else {
+        } else {
           showDialog(
             context: context,
             builder: (c) {
@@ -235,6 +258,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     await sharedPreferences!.setString("name", nameController.text.trim());
     await sharedPreferences!.setString("photoUrl", sellerImageUrl);
   }
+  // Function to get image data
+  Future<Uint8List?> getImageData() async {
+    if (imageXFile != null) {
+      return await imageXFile!.readAsBytes();
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -283,21 +313,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onTap: () {
                         _getImage();
                       },
-                      child: CircleAvatar(
+                      child: FutureBuilder<Uint8List?>(
+                        future: getImageData(),
+                        builder: (context, snapshot) {
+                          ImageProvider<Object>? imageProvider;
+                          
+                          if (snapshot.connectionState == ConnectionState.done) {
+                            if (snapshot.data != null) {
+                              if (kIsWeb) {
+                                // For web, create a MemoryImage
+                                imageProvider = MemoryImage(snapshot.data!);
+                              } else {
+                                // For mobile, create a FileImage
+                                imageProvider = FileImage(File(imageXFile!.path));
+                              }
+                            }
+                          }
+
+                      return CircleAvatar(
                         radius: MediaQuery.of(context).size.width * 0.20,
-                        backgroundColor: Colors.white,
-                        backgroundImage: imageXFile == null
-                            ? null
-                            : FileImage(
-                                File(imageXFile!.path),
-                              ),
-                        child: imageXFile == null
-                            ? Icon(
-                                Icons.person_add_alt_1,
-                                size: MediaQuery.of(context).size.width * 0.20,
-                                color: Colors.grey,
-                              )
-                            : null,
+                            backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+                            backgroundImage: imageProvider,
+                            child: imageXFile == null
+                                ? Icon(
+                                    Icons.person_add_alt_1,
+                                    size: MediaQuery.of(context).size.width * 0.20,
+                                    color: Colors.grey,
+                                  )
+                                : null,
+                          );
+                        },
                       ),
                     ),
                   ),

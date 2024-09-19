@@ -90,6 +90,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               borderRadius: BorderRadius.circular(copAnimated ? 40.0 : 0.0),
             ),
+            child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -128,6 +129,7 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                 ),
               ],
+              ),
             ),
           ),
 
